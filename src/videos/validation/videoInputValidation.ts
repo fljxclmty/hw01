@@ -1,12 +1,40 @@
 import { CreateVideoInputModel, UpdateVideoInputModel } from "../types/video";
 import { FieldError } from '../types/error';
+import { Resolutions } from "../types/video";
+
+export const videoInputValidation = (
+    data: CreateVideoInputModel,
+): FieldError[] => {
+    const errors: FieldError[] = [];
+
+    // title - обязательное поле
+    if (!data.title || data.title.trim() === '') {
+        errors.push({ field: 'title', message: 'Title is required' });
+    } else if (data.title.length > 40) {
+        errors.push({ field: 'title', message: 'Title must be no longer than 40 characters' });
+    }
+
+    // author - обязательное поле
+    if (!data.author || data.author.trim() === '') {
+        errors.push({ field: 'author', message: 'Author is required' });
+    } else if (data.author.length > 20) {
+        errors.push({ field: 'author', message: 'Author must be no longer than 20 characters' });
+    }
+
+    // availableResolutions - обязательное поле
+    if (!data.availableResolutions || data.availableResolutions.length === 0) {
+        errors.push({ field: 'availableResolutions', message: 'At least one resolution is required' });
+    }
+
+    return errors;
+};
 
 export const videoUpdateValidation = (
     data: UpdateVideoInputModel,
 ): FieldError[] => {
     const errors: FieldError[] = [];
 
-    // title — опционально, но если есть — проверяем
+    // title - опционально, но если есть - проверяем
     if (data.title !== undefined) {
         if (data.title.trim() === '') {
             errors.push({ field: 'title', message: 'Title is required' });
@@ -15,7 +43,7 @@ export const videoUpdateValidation = (
         }
     }
 
-    // author — опционально, но если есть — проверяем
+    // author - опционально, но если есть - проверяем
     if (data.author !== undefined) {
         if (data.author.trim() === '') {
             errors.push({ field: 'author', message: 'Author is required' });
@@ -24,19 +52,19 @@ export const videoUpdateValidation = (
         }
     }
 
-    // availableResolutions — опционально, но если есть — проверяем
+    // availableResolutions - опционально, но если есть - проверяем
     if (data.availableResolutions !== undefined) {
         if (data.availableResolutions.length === 0) {
             errors.push({ field: 'availableResolutions', message: 'At least one resolution is required' });
         }
     }
 
-    // canBeDownloaded — уже boolean по типу, проверяем только наличие
-    if (data.canBeDownloaded === undefined) {
-        errors.push({ field: 'canBeDownloaded', message: 'Can be downloaded is required' });
+    // canBeDownloaded - опционально, но если есть - должен быть boolean
+    if (data.canBeDownloaded !== undefined && typeof data.canBeDownloaded !== 'boolean') {
+        errors.push({ field: 'canBeDownloaded', message: 'Can be downloaded must be a boolean' });
     }
 
-    // minAgeRestriction — опционально, number | null по типу
+    // minAgeRestriction - опционально
     if (data.minAgeRestriction !== undefined) {
         if (data.minAgeRestriction !== null) {
             if (data.minAgeRestriction > 18 || data.minAgeRestriction < 1) {
@@ -48,12 +76,12 @@ export const videoUpdateValidation = (
         }
     }
 
-    // publicationDate — опционально, string по типу
+    // publicationDate - опционально
     if (data.publicationDate !== undefined) {
         if (!isValidISODate(data.publicationDate)) {
             errors.push({
                 field: 'publicationDate',
-                message: 'Publication date must be in ISO 8601 format'
+                message: 'Publication date must be in ISO 8601 format (e.g., 2024-01-15T10:30:00.000Z)'
             });
         }
     }
