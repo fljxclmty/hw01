@@ -45,18 +45,18 @@ export const videoUpdateValidation = (
 ): FieldError[] => {
     const errors: FieldError[] = [];
 
-    // title
+    // title - защита от null И undefined
     if (data.title !== undefined) {
-        if (data.title.trim() === '') {
+        if (data.title === null || data.title.trim() === '') {
             errors.push({ field: 'title', message: 'Title is required' });
         } else if (data.title.length > 40) {
             errors.push({ field: 'title', message: 'Title must be no longer than 40 characters' });
         }
     }
 
-    // author
+    // author - защита от null И undefined
     if (data.author !== undefined) {
-        if (data.author.trim() === '') {
+        if (data.author === null || data.author.trim() === '') {
             errors.push({ field: 'author', message: 'Author is required' });
         } else if (data.author.length > 20) {
             errors.push({ field: 'author', message: 'Author must be no longer than 20 characters' });
@@ -65,7 +65,7 @@ export const videoUpdateValidation = (
 
     // availableResolutions
     if (data.availableResolutions !== undefined) {
-        if (data.availableResolutions.length === 0) {
+        if (!Array.isArray(data.availableResolutions) || data.availableResolutions.length === 0) {
             errors.push({ field: 'availableResolutions', message: 'At least one resolution is required' });
         } else {
             const validResolutions = Object.values(Resolutions);
@@ -81,9 +81,11 @@ export const videoUpdateValidation = (
         }
     }
 
-    // canBeDownloaded
-    if (data.canBeDownloaded === undefined) {
-        errors.push({ field: 'canBeDownloaded', message: 'Can be downloaded is required' });
+    // canBeDownloaded - проверка типа! (тест отправляет строку)
+    if (data.canBeDownloaded !== undefined) {
+        if (typeof data.canBeDownloaded !== 'boolean') {
+            errors.push({ field: 'canBeDownloaded', message: 'Can be downloaded must be a boolean' });
+        }
     }
 
     // minAgeRestriction
@@ -100,7 +102,12 @@ export const videoUpdateValidation = (
 
     // publicationDate
     if (data.publicationDate !== undefined) {
-        if (!isValidISODate(data.publicationDate)) {
+        if (typeof data.publicationDate !== 'string') {
+            errors.push({
+                field: 'publicationDate',
+                message: 'Publication date must be a string'
+            });
+        } else if (!isValidISODate(data.publicationDate)) {
             errors.push({
                 field: 'publicationDate',
                 message: 'Publication date must be in ISO 8601 format'
