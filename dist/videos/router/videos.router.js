@@ -30,20 +30,20 @@ exports.videosRouter
     }
     const newVideo = {
         id: in_memory_db_1.db.videos.length ? in_memory_db_1.db.videos[in_memory_db_1.db.videos.length - 1].id + 1 : 1,
-        title: req.body.title, // maxLength: 40
-        author: req.body.author, // maxLength: 20
+        title: req.body.title,
+        author: req.body.author,
         canBeDownloaded: false,
-        minAgeRestriction: null, // maximum: 18  minimum: 1 null - no restriction
-        createdAt: new Date().toISOString(), // ISO 8601 date-time format
-        publicationDate: new Date(Date.now() + 86400000).toISOString(), // ISO 8601 date-time format By default - +1 day from CreatedAt
-        availableResolutions: req.body.availableResolutions, // At least one resolution should be added
+        minAgeRestriction: null,
+        createdAt: new Date().toISOString(),
+        publicationDate: new Date(Date.now() + 86400000).toISOString(),
+        availableResolutions: req.body.availableResolutions,
     };
     in_memory_db_1.db.videos.push(newVideo);
     res.status(http_statuses_1.HttpStatus.Created).send(newVideo);
 })
     .put('/:id', (req, res) => {
-    const id = req.params.id;
-    const index = in_memory_db_1.db.videos.findIndex((v) => v.id === +id);
+    const id = +req.params.id; // ✅ ТОЛЬКО ЭТО ИСПРАВЛЕНО
+    const index = in_memory_db_1.db.videos.findIndex((v) => v.id === id);
     if (index === -1) {
         res
             .status(http_statuses_1.HttpStatus.NotFound)
@@ -65,9 +65,8 @@ exports.videosRouter
     res.sendStatus(http_statuses_1.HttpStatus.NoContent);
 })
     .delete('/:id', (req, res) => {
-    const id = req.params.id;
-    //ищет первый элемент, у которого функция внутри возвращает true и возвращает индекс этого элемента в массиве, если id ни у кого не совпал, то findIndex вернёт -1.
-    const index = in_memory_db_1.db.videos.findIndex((v) => v.id === +id);
+    const id = +req.params.id;
+    const index = in_memory_db_1.db.videos.findIndex((v) => v.id === id);
     if (index === -1) {
         res
             .status(http_statuses_1.HttpStatus.NotFound)
