@@ -71,14 +71,14 @@ const videoUpdateValidation = (data) => {
             }
         }
     }
-    // canBeDownloaded - проверка только на undefined (тип гарантирован TS)
+    // canBeDownloaded
     if (data.canBeDownloaded === undefined) {
         errors.push({ field: 'canBeDownloaded', message: 'Can be downloaded is required' });
     }
     // minAgeRestriction
     if (data.minAgeRestriction !== undefined) {
         if (data.minAgeRestriction !== null) {
-            if (data.minAgeRestriction > 18 || data.minAgeRestriction < 1) { // ⚠️ 1, не 0!
+            if (data.minAgeRestriction > 18 || data.minAgeRestriction < 1) {
                 errors.push({
                     field: 'minAgeRestriction',
                     message: 'Min age restriction must be between 1 and 18 or null'
